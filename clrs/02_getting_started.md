@@ -1,3 +1,5 @@
+## Exercises
+
 ##### 2.2-1 Express the function n^3/1000 - 100n^2 - 100n + 3 in terms of \Theta notation.
 	\Theta(n^3)
 	
@@ -126,3 +128,21 @@ sort S -> for each element of sorted S, test wheter (x - element) is in it by bi
 
 Overall complexity = O(sorting) + O(n) * O(binary_search)
 if we use merge sort, then = O(nlogn) + O(n)*O(lgn) = O(nlgn)
+
+## Problems
+
+##### 2-1 Insertion sort on small arrays in merge sort
+Although merge sort runs in \Theta(nlgn) worst-case time and insertion sort runs in \Theta(n^2) worst-case time, the constant factors in insertion sort can make it faster in practice for small problem sizes on many machines. Thus, it makes sense to *coarsen* the leaves of the recursion by using insertion sort within merge sort when subproblems become sufficiently small. Consider a modification to merge sort in which n=k sublists of length k are sorted using insertion sort and then merged using the standard merging mechanism, where k is a value to be determined.
+
+_a. Show that insertion sort can sort the n=k sublists, each of length k, in ‚.nk/ worst-case time._
+
+_b. Show how to merge the sublists in \Theta(nlg(n/k)) worst-case time._
+
+_c. Given that the modified algorithm runs in \Theta(nk + nlg(n/k)) worst-case time, what is the largest value of k as a function of n for which the modified algorithm has the same running time as standard merge sort, in terms of \Theta-notation?_
+
+_d. How should we choose k in practice?_
+
+a. sort cost for each sublist in worst case = \Theta(k^2)
+Overall cost = n/k * \Theta(sorting) = n/k * \Theta(k^2) = \Theta(nk)
+
+b. There are n/k lists and we should do lg(n/k) merges. Each merge operation will take 
