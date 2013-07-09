@@ -1,5 +1,38 @@
 ## Exercises
 
+##### 2.1-1 Using Figure 2.2 as a model, illustrate the operation of INSERTION-SORT on the array A = <31, 41, 59, 26, 41, 58>
+
+<31, 41, 59, 26, 41, 58>
+<26, 31, 41, 59, 41, 58>
+<26, 31, 41, 41, 59, 58>
+<26, 31, 41, 41, 58, 59>
+
+##### 2.1-2 Rewrite the INSERTION-SORT procedure to sort into nonincreasing instead of non- decreasing order.
+
+	for (int i=1; i < A.length; ++i)
+		int val = A[i-1]
+		for (int j=i-1; j > -1; --j)
+			if (A[j] < val)
+				A[j+1] = A[j]
+			else
+				break
+		A[j+1] = val
+		
+##### 2.1-3 Consider the searching problem: Input: A sequence of n numbers A = <a_1, a_2, ..., a_n> and a value v. Output: An index i such that v = A[i] or the special value NIL if v does not appear in A. Write pseudocode for linear search, which scans through the sequence, looking for v. Using a loop invariant, prove that your algorithm is correct. Make sure that your loop invariant fulfills the three necessary properties.
+
+	for (int i=0; i < A.length; ++i)
+		if (v == A[i])
+			return i
+	return nil
+	
+##### 2.1-4 Consider the problem of adding two n-bit binary integers, stored in two n-element arrays A and B. The sum of the two integers should be stored in binary form in an (n + 1) -element array C . State the problem formally and write pseudocode for adding the two integers.
+
+	int carry = 0 
+	for (int i=n; i > -1; --i)
+		C[i+1] = A[i] ^ B[i] ^ carry
+		carry = (A[i] & B[i]) | (A[i] & carry) | (B[i] & carry)
+	C[0] = carry
+	
 ##### 2.2-1 Express the function n^3/1000 - 100n^2 - 100n + 3 in terms of \Theta notation.
 	\Theta(n^3)
 	
