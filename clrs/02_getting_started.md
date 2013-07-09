@@ -249,15 +249,112 @@ given the coefficients a_0, a_1, ..., a_n and a value for x:
 	2. for i = n downto 0 
 	3.     y = a_i + x*sy
 	
-_a. In terms of ‚-notation, what is the running time of this code fragment for Horner’s rule?_
+_a. In terms of ‚\Theta-notation, what is the running time of this code fragment for Horner’s rule?_
 
 _b. Write pseudocode to implement the naive polynomial-evaluation algorithm that computes each term of the polynomial from scratch. What is the running time of this algorithm? How does it compare to Horner’s rule?_
 	
 _c. Consider the following loop invariant:_
 	
 _At the start of each iteration of the for loop of lines 2–3,_
+
 	y = \sum_{k=0}^{n-(i+1)} a_{k+i+1}x^k
+
 _Interpret a summation with no terms as equaling 0. Following the structure of the loop invariant proof prPesented in this chapter, use this loop invariant to show that, at termination,_ 
+
 	y = \sum_{k=0}^n a_kx^k
 	
-_d. Conclude by arguing that the given code fragment correctly evaluates a poly- nomial characterized by the coefficients a_0, a_1, ..., a_n.
+_d. Conclude by arguing that the given code fragment correctly evaluates a poly- nomial characterized by the coefficients a_0, a_1, ..., a_n._
+
+a. Running time = \Theta(n)
+
+b. 
+
+	naive_poly_eval
+		y = 0
+		for i = 0 to n
+			acc = 1 
+			for j = 0 to i
+				acc = acc * x
+			y = a_i * acc
+			
+Running time = \Theta(n^2)
+
+Compared to Horner's rule, naive algorithm is much slower, \Theta(n) vs. \Theta(n^2)
+
+c.
+
+Consider the last iteration, where i = 0; from given loop invariant, we know at the beginning of the last iteration
+
+	y = \sum_{k=0}^{n-(i-1)}a_{k+i+1}x^k = \sum_{k=0}^{n-1} a_{k+1}x^k 
+	
+From program, we know y = a_0 + x * y, which implies
+
+	y = a_0 + x * y = a_0 + x * \sum_{k=0}^{n-1} a_{k+1}x^k
+	                = a_0 * x^0 + \sum_{k=1}^n a_k x^k
+					= \sum_{k=0}^n a_kx^k
+					
+d.
+
+We know at the termination of loop (thus the end of program), 
+
+	y = \sum_{k=0}^n a_kx^k = P(x)
+	
+##### 2-4 Inversions
+Let A[1..n] be an array of n distinct numbers. If i < j and A[i] > A[j], then the pair(i, j) is called an inversion of A.
+
+_a. List the five inversions of the array <2, 3, 8, 6, 1>_
+
+_b. What array with elements from the set{1, 2, ..., n} has the most inversions? How many does it have?_
+
+_c. What is the relationship between the running time of insertion sort and the number of inversions in the input array? Justify your answer._
+
+_d. Give an algorithm that determines the number of inversions in any permutation on n elements in \Theta(nlg(n)) worst-case time. (Hint: Modify merge sort.)_
+
+a. 
+
+	<2, 1>, <3, 1>, <8, 6>, <8, 1>, <6, 1>
+
+b. array <n, n-1, ..., 1> has the most inversions, which equals to n(n-1)/2
+
+c. for each inversion, insertion sort have to go through the previous sorted subarray and do a insert operation. Thus the running time of insertion sort equals to O(NumOfInversions)
+
+d. java code 
+
+	int find_inversions(int[] arr) {
+		if (arr == null || arr.length < 2) {
+			return 0;
+		}
+		int mid = arr.length / 2;
+		int left = find_inversions(arr, 0, mid);
+		int right = find_inversions(arr, mid, arr.length);
+		int[] buf = new int[arr.length];
+		return left + right + merge(arr, buf, 0, mid, arr.length);
+	}
+	
+	int merge(int[] arr, int[] buf, int start, int mid, int end) {
+		int i = start;
+		int j = mid;
+		int k = start;
+		int inversions = 0;
+		while (i < mid && j < end) {
+			if (arr[i] <= arr[j]) {
+				buf[k] = arr[i];
+				i++;
+			} else {
+				buf[k] = arr[j];
+				inversions++
+				j++;
+			}	
+			k++;
+		}
+		while (i < mid) {
+			buf[k++] = arr[i++];
+		}
+		while (j < end) {
+			buf[k++] = arr[j++]
+		}
+		for (int i=start; i < end; ++i) {
+			arr[i] = buf[i];
+		}
+		return inversions;
+	}
