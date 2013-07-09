@@ -178,4 +178,86 @@ _d. How should we choose k in practice?_
 a. sort cost for each sublist in worst case = \Theta(k^2)
 Overall cost = n/k * \Theta(sorting) = n/k * \Theta(k^2) = \Theta(nk)
 
-b. There are n/k lists and we should do lg(n/k) merges. Each merge operation will take 
+b.
+	
+	       n                n
+	     /   \
+      n/2    n/2            n
+      / \    / \
+	  ...    ...            ...
+	 /    \  /   \
+	k     k k     k         n/k * k = n
+  
+Above tree has height lg(n/k) and merge cost for each level is n, therefore the total worst cost is \Theta(nlg(n/k)) 
+
+c. 
+
+	nk <= nlgn and nlg(n/k) <= nlgn
+	which implies: k <= lgn  and n/k <= n
+	thus, 1 <= k <= lgn
+	
+Roughly, the largest k we can choose is k = lgn
+
+d. It should depends on size of n, if lgn is not very large then k should be close to lgn; otherwise, we should choose a k less than lgn such that insertion sort is faster than merge sort for sorting k elements.
+
+##### 2-2 Correctness of bubblesort
+_Bubblesort is a popular, but inefficient, sorting algorithm. It works by repeatedly swapping adjacent elements that are out of order._
+
+	BUBBLESORT(A)
+	1 for i = 1 to A.length-1
+	2 	for j = A.length downto i+1
+	3		if A[j] < A[j-1]
+	4			exchange A[j] with A[j-1]
+
+_a. Let A' denote the output of BUBBLESORT(A). To prove that BUBBLESORT is correct, we need to prove that it terminates and that_
+
+	A'[1] <= A'[2] <= ... <= A'[n],
+	
+_where n = A.length. In order to show that BUBBLESORT actually sorts, what else do we need to prove ? The next two parts will prove inequality (2.3)._
+
+_b. State precisely a loop invariant for the for loop in lines 2-4, and prove that this loop invariant holds. Your proof should use the structure of the loop invariant proof presented in this chapter._
+
+_c. Using the termination condition of the loop invariant proved in part (b), state a loop invariant for the for loop in lines 1–4 that will allow you to prove in- equality (2.3). Your proof should use the structure of the loop invariant proof presented in this chapter._
+
+_d. What is the worst-case running time of bubble sort? How does it compare to the running time of insertion sort?_
+
+a. A' is a permutation of A
+
+b. 
+
+	Init: A'[1..i] is sorted
+	Maintenance: consider elements in A[i+1 .. n], compare two adjacent elements from right to left and swap two elements if the left one is smaller. thus, after the inner for loop, A'[1..i+1] is sorted.
+	Terminate: A'[1..n] is sorted
+
+c.
+
+	Init: A'[1..i] is sorted, thus A'[1] <= A'[2] <= ... <= A'[i]
+	Maintenance: consider elements in A[i+1 .. n], compare two adjacent elements from right to left and swap two elements if the left one is smaller. thus, after the inner for loop, A'[1..i+1] is sorted. Therefore, A'[1] <= A'[2] <= ... <= A'[i] <= A'[i+1]
+	Terminate: A'[1] <= A'[2] <= ... <= A'[n].
+
+d. Worst case: O(n^2). Compared to insertion sort, bubble sort cost O(n^2) even for best case; where insertion sort only cost O(n) in the same situation. 
+
+
+##### 2-3 Correctness of Horner’s rule
+The following code fragment implements Horner’s rule for evaluating a polynomial
+	
+	P(x) = \sum_{k=0}^n a_kx^k
+		 = a_0 + x(a_1 + x(a_2 + ... + x(a_{n-1} + xa_n)...)),
+given the coefficients a_0, a_1, ..., a_n and a value for x:
+
+	1. y = 0
+	2. for i = n downto 0 
+	3.     y = a_i + x*sy
+	
+_a. In terms of ‚-notation, what is the running time of this code fragment for Horner’s rule?_
+
+_b. Write pseudocode to implement the naive polynomial-evaluation algorithm that computes each term of the polynomial from scratch. What is the running time of this algorithm? How does it compare to Horner’s rule?_
+	
+_c. Consider the following loop invariant:_
+	
+_At the start of each iteration of the for loop of lines 2–3,_
+	y = \sum_{k=0}^{n-(i+1)} a_{k+i+1}x^k
+_Interpret a summation with no terms as equaling 0. Following the structure of the loop invariant proof prPesented in this chapter, use this loop invariant to show that, at termination,_ 
+	y = \sum_{k=0}^n a_kx^k
+	
+_d. Conclude by arguing that the given code fragment correctly evaluates a poly- nomial characterized by the coefficients a_0, a_1, ..., a_n.
