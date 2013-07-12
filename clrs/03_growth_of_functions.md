@@ -182,4 +182,57 @@ where \phi is the golden ratio and \hat{\phi} is its conjugate
 ##### 3.2-8
 Show that klnk = \Theta(n) implies k = \Theta(n/ln(n))
 
-TODO		
+	klnk = \Theta(n) =>
+	ln(klnk) = \Theta(ln(n)) =>
+	lnk + lnlnk = \Theta(ln(n)) =>
+	lnk = \Theta(ln(n)) =>
+	k = \Theta(n)
+	
+## Problems
+
+##### 3-1 Asymptotic behavior of polynomials
+
+a. 
+
+	p(n) = \sum_0^d a_in^i = \Theta(n^d)
+	since k >= d, then n^d <= n^k
+	p(n) = O(n^k)
+	
+b. 
+
+	p(n) = \sum_0^d a_in^i = \Theta(n^d)
+	since k <= d, then n^d >= n^k
+	p(n) = \Omega(n^k)
+
+c.
+
+	p(n) = \sum_0^d a_in^i = \Theta(n^d)
+	since k = d, then n^d = n^k
+	p(n) = \Theta(n^k)
+
+d. 
+
+	p(n) = \sum_0^d a_in^i = \Theta(n^d)
+	since k > d, then n^d < n^k
+	p(n) = o(n^k)
+
+e.
+
+		p(n) = \sum_0^d a_in^i = \Theta(n^d)
+		since k < d, then n^d > n^k
+		p(n) = w(n^k)
+
+##### 3-2 Relative asymptotic growths
+Indicate, for each pair of expressions (A, B) in the table below, whether A is O, o, \Omega, w or \Theta of B. Assume that k >= 1, \epsilon > 0, and c > 1 are constants. Your answer should be in the form of the table with "yes" or "no" written in each box.
+
+	       A			B			O	  o	  \Omega  w   \Theta
+	a.  lg^k(n)	   n^\epsilon       no   yes    no    no    no
+	b.  n^k			 c^n            yes  yes    no    no    no
+	c. \sqrt(n)		n^{sin(n)}      no   no     no    no    no
+	d. 	2^n			2^{n/2}		    no   no     yes   yes   no
+	e.  n^{lgc}		c^{lgn}		    yes  no     yes   no    yes
+	f.	lg(n!)		lg(n^n)		    yes  no     yes   no    yes
+	
+##### 3-3 Ordering by asymptotic growth rates
+
+TODO
