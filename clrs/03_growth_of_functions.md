@@ -96,3 +96,90 @@ Give corresponding definitions for \Omega(g(n, m)) and \Theta(g(n, m)).
 	\Theta(g(n, m)) = {f(n, m): there exist positive constants c1, c2, n0, and m0
 				   	   such that 0 <= c1*g(n, m) <= f(n, m) <= c2*g(n, m)
 				   	   for all n >= n0 or m >= m0}.
+
+##### 3.2-1
+Show that if f(n) and g(n) are monotonically increasing functions, then so are the functions f(n) + g(n) and f(g(n)), and if f(n) and g(n) are in addition nonnegative, then f(n) * g(n) is monotonically increasing.
+
+	f(n) and g(b) are monotonically increasing functions =>
+	for any x1 < x2, f(x1) < f(x2) and g(x1) < g(x2) =>
+	f(x1) + g(x1) < f(x2) + g(x2) =>
+	let z(n) = f(n) + g(n), then z(x1) < z(x2) =>
+	z(n) is monotonically increasing function
+	
+	f(n) and g(b) are monotonically increasing functions =>
+	for any x1 < x2, f(x1) < f(x2) and g(x1) < g(x2) =>
+	since both f(n) and g(n) are nonnegative, f(x1) * g(x1) < f(x2) * g(x2) =>
+	let z(n) = f(n) * g(n), then z(x1) < z(x2) =>
+	z(n) is monotonically increasing function
+	
+##### 3.2-2
+Prove equation (3.16).
+
+_For all real a > 0, b > 0, c > 0, and n,_
+	a^(log_b c) = c^(log_b a)
+	
+	take log_b on both side =>
+	log_b(c) * log_b(a) = log_b(a) * log_b(c)
+	Q.E.D
+	
+##### 3.2-3
+Prove equation (3.19). Also prove that n! = w(2^n) and n! = o(n^n)
+
+_lg(n!) = \Theta(nlgn)_
+
+	n! = \sqrt(2 *pi *n)(n/e)^n(1 + \Theta(1/n)) =>
+	lg(n!) = lg(\sqrt(2 *pi *n)) + nlg(n/e) + lg(1 + \Theta(1/n))
+		   = \Theta(nlg(n))
+		   
+	n! / 2^n = \sqrt(2 *pi *n)(n/e)^n(1 + \Theta(1/n)) / 2^n
+			 = \sqrt(2 *pi *n) (n/(2*e))^n (1 + C/n)
+			 >= C * n^(n-1)
+	thus n! >= 2^n and there is no constant c such that n! >= c 2^n
+	n! = w(2^n)
+	
+	n! = 1*2*...*n < n*n...*n = n^n => n! = o(n^n)
+	
+##### 3.2-4
+Is the function (\upper lgn \upper)! polynomially bounded ? Is the function  (\upper lglgn \upper)! polynomially bounded ?
+
+TODO
+
+##### 3.2-5
+Which is asymptotically larger: lg(lg^* n) or lg^*(lgn)?
+
+TODO
+
+##### 3.2-6
+Show that the golden ratio \phi and its conjugate \hat{\phi} both satisfy the equation x^2 = x+1.
+
+	\phi^2 = (6 + 2\sqrt(5)) / 4
+		   = (3 + \sqrt(5)) / 2
+		   = (1 + \sqrt(5)) / 2 + 1
+		   = \phi + 1
+
+	\hat{\phi}^2 = (6 - 2\sqrt(5)) / 4
+	   		     = (3 - \sqrt(5)) / 2
+	   		   	 = (1 - \sqrt(5)) / 2 + 1
+	   		     = \hat{\phi} + 1
+				 
+##### 3.2-7
+Prove by induction that the ith Fibonacci number satisfies the equality
+	
+	F_i = (phi^i - \hat{\phi}^i) / \sqrt(5),
+
+where \phi is the golden ratio and \hat{\phi} is its conjugate
+
+	F_1 = 1 = (phi - \hat{\phi}) / \sqrt(5)
+	F_2 = 1 = (phi^2 - \hat{\phi}^2) / \sqrt(5)
+	Assume it's true for F_k, then for F_{k+1}
+	F_{k+1} = F_k + F_{k-1}
+		    = (phi^k - \hat{\phi}^k) / \sqrt(5) + (phi^(k-1) - \hat{\phi}^(k-1)) / \sqrt(5)
+			= (phi^k + phi^(k-1) - \hat{\phi}^k - \hat{\phi}^(k-1)) / \sqrt(5)
+			= (phi^(k-1) * (phi^k + 1) - \hat{\phi}^(k-1) * (1 + \hat{\phi})) / \sqrt(5)
+			= (phi^(k-1) * phi^2 - \hat{\phi}^(k-1) * \hat{\phi}^2) / \sqrt(5)
+			= (phi^(k+1) - \hat{\phi}^(k+1)) / \sqrt(5)
+	
+##### 3.2-8
+Show that klnk = \Theta(n) implies k = \Theta(n/ln(n))
+
+TODO		
