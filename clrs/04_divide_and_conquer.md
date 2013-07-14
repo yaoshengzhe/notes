@@ -43,5 +43,106 @@ We can add a wrap method and do array empty in that wrap method. e.g.
 		max_end_here = max(0, max_end_here + A[i])
 		max_so_far = max(max_so_far, max_end_here)
 	}
-	return max_so_far
+	
+##### 4.3-1 Show that the solution of T(n) = T(n-1) + n is O(n^2)
+
+Assume T(n) = an^2 + bn + c where a >= 1, b >= 0 and c >= 0
+
+	T(n) = T(n-1) + n
+		 = a(n-1)^2 + b(n-1) + c + n
+		 = an^2 - 2an + a + bn - b + c + n
+		 = an^2 + bn + c + (1 - 2a)n + a
+		 <= an^2 + bn + c when n >= 1
+		 
+##### 4.3-2 Show that the solution of T(n) = T(\upper n/2 \upper) + 1 is O(lgn).
+
+Assume T(n) = algn + b, where a >= 10
+
+	T(n) = T(\upper n/2 \upper) + 1
+		 <= alg(n/1.9) + b + 1
+		  = a (lg(n) - lg1.9) + b + 1
+		  = alg(n) + b + 1 - alg1.9
+		  <= alg(n) + b when n >= 40
+		  
+##### 4.3-3 
+We saw that the solution of T(n) = 2T(\lower n/2 \lower) + n is O(nlgn). Show that the solution of this recurrence is also \Omega(nlgn). Conclude that the solution is \Theta(nlgn).
+
+Assume T(n) = anlgn + bn + c, where 0 <= a <= 1, b >= 0 and c >= 0
+
+	T(n) = 2T(\lower n/2 \lower) + n
+	     = anlg(n/2) + bn + 2c + n
+		 = anlgn + (b+1-a)n + 2c
+		 >= anlgn + bn + c
+		 
+##### 4.3-4
+T(n) <= anlgn + bn where a >= 1
+
+	T(n) <= anlgn/2 + bn + n
+	  	  = anlgn + bn + n - an
+	  	  = anlgn + (b+1-a)n
+	  	 <= anlgn + bn
+		 
+##### 4.3-5
+Assume T(n) <= anlgn + bn, where a >= 2, b >= 0
+
+	T(n) = 2T(\upper n/2 \upper) + n
+		<= anlg(n/2+1) + bn + n
+		<= anlg(n/1.9) + bn + n when n >= 40
+		 = anlgn + (b+1-alg1.9)n
+		<= anlgn + bn 
+	thus T(n) = O(nlgn)
+	
+Assume T(n) >= anlgn + bn, where 0 <= a < 1, b >= 0 
+
+		T(n) = 2T(\upper n/2 \upper) + n
+			>= anlgn/2 + bn + n
+			 = anlgn + (b+1-a)n
+			>= anlgn + bn 
+		thus T(n) = \Omega(nlgn)
+	
+Therefore, T(n) = \Theta(nlgn)
+
+##### 4.3-6 Show that the solution to T(n) = 2T(\lower n/2 \lower + 17) + n is O(nlgn).
+
+Assume T(n) <= anlgn + bn, where a >= 2, b >= 0
+
+	T(n) = 2T(\lower n/2 \lower + 17) + n
+		<= a*(n+34)*lg(n/2+17) + b(n+34) + n
+		 = anlg(n/2+17) + (b+1)n + 34b + 34alg(n/2+17)
+		<= anlg(n/1.9) + (b+1)n when n >= 1000
+		 = anlgn + (b+1-alg1.9)n
+		 <= anlgn + bn 
+	thus T(n) = O(nlgn)
+	
+##### 4.3-7
+
+Assume T(n) <= cn^{log_3 4}
+
+	T(n) = 4T(n/3) + n
+	    <= 4c*(n/3)^{log_3 4} + n
+		 = cn^{log_3 4} * 4 / (3^log_3 4) + n
+		 = cn^{log_3 4} + n > cn^{log_3 4}
+		 
+Thus a substitution proof with the assumption T(n) <= cn^{log_3 4} fails.
+
+Assume T(n) <= an^{log_3 4} + bn where a >= 0 and 0 <= b < 2
+
+	T(n) = 4T(n/3) + n
+    	<= 4a*(n/3)^{log_3 4} + bn/3 + n
+	  	 = an^{log_3 4} * 4 / (3^log_3 4) + (b+3)n/3
+	 	 = an^{log_3 4} + (b+1)/3 * n 
+		<= an^{log_3 4} + bn
 		
+##### 4.3-8
+
+Typo, T(n) = \Theta(n^2lgn)
+
+##### 4.3-9
+
+	T(n) = 3T(\sqrt(n)) + lgn
+	let T(n) = T(2^m) = S(m), 
+	theregore m = lgn and T(n/2) = T(2^m/2) = S(m/2)
+	S(m) = T(n) = 3T(\sqrt(n)) + lgn = 3S(m/2) + m
+	based on master throrem,
+	S(m) = m^{lg_2 3}
+	T(n) = (lgn)^{lg_2 3}
