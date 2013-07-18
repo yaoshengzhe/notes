@@ -146,3 +146,94 @@ Typo, T(n) = \Theta(n^2lgn)
 	based on master throrem,
 	S(m) = m^{lg_2 3}
 	T(n) = (lgn)^{lg_2 3}
+
+##### 4.5-1
+
+a. T(n) = \sqrt(n)
+
+b. T(n) = \sqrt(n)lgn
+
+c. T(n) = n
+
+d. T(n) = n^2
+
+##### 4.5-2
+
+since Strassen's algorithm = o(n^lg7),
+ 
+	n^{log_4 a} <= n^lg7 =>
+		log_4 a <= lg 7 =>
+		lga / 2 <= lg7 =>
+		lga <= lg49 =>
+		a <= 49
+
+thus the largest a = 49
+
+##### 4.5-3
+log_b a = 0, based on master theorem (2), T(n) = lgn
+
+##### 4.5-4
+No, since n^2lgn = \Omega(n^2) but af(n/b) = n^2(lgn - 1) > cf(n) for n larger enough.
+
+##### 4.5-5
+T(n) = 4T(n/2) + n^2lgn
+
+## Problems
+##### 4-1 Recurrence examples
+
+a. T(n) = \Theta(n^4)
+
+b. T(n) = \Theta(n)
+
+c. T(n) = \Theta(n^2lgn)
+
+d. T(n) = \Theta(n^2)
+
+e. T(n) = \Theta(n^lg7)
+
+f. T(n) = \Theta(\sqrt(n)lgn)
+
+##### 4-2 Parameter-passing costs
+
+a.
+
+	1) T(n) = T(n/2) + 1 => T(N) = lgN
+	2) T(n) = T(n/2) + N => T(N) = NlgN
+	3) T(n) = T(n/2) + n => T(N) = N
+	
+b.
+	1) T(n) = 2T(n/2) + n => T(N) = NlgN
+	   T(n) = 2T(n/2) + 2N => T(N) = N^2lgN
+	   T(n) = 2T(n/2) + 2n => T(N) = NlgN
+	   
+##### 4-3 More recurrence examples
+
+a. T(N) = \Theta(n^{log_3 4})
+
+b. T(N) = \Theta(n/lgn)
+
+c. T(N) = \Theta(n^2\sqrt(n))
+
+d. T(N) = \Theta(n)
+
+e. T(N) = \Theta(n/lgn)
+
+f. T(N) = \Theta(n)
+
+g. T(N) = w(n)
+
+h. T(N) = \Theta(nlgn)
+
+j. T(n) = \Theta(nlglgn)
+
+	T(n) = T(2^m) = S(m), m = lgn, \sqrt(n) = 2^{m/2}
+	S(m) = 2^{m/2} S(m/2) + 2^m =>
+	S(m) = \Theta(2^mlgm)
+	thus, T(n) = \Theta(nlglgn)
+	
+##### 4-4 Fibonacci numbers
+TODO
+
+##### 4-5 Chip testing
+	
+
