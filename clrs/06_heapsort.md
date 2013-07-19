@@ -32,3 +32,6 @@ No, because A[3] = 6 < A[8] = 7, but A[3] is the parent of A[8]
 
 ##### 6.1-7
 Since 2 * \lower n/2 \lower <= n which implies this node must have at least one child. Instead 2 * (\lower n/2 \lower + 1) >= n+1, thus there is no child for node \lower n/2 \lower + 1, that is true for all nodes after \lower n/2 \lower + 1. Therefore the statement is true.
+
+##### 6.3-2
+Otherwise, the top node may not be the node with maximum value.
