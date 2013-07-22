@@ -35,3 +35,12 @@ Since 2 * \lower n/2 \lower <= n which implies this node must have at least one 
 
 ##### 6.3-2
 Otherwise, the top node may not be the node with maximum value.
+
+##### 6.4-3
+increasing order: \Theta(nlgn)
+
+decreasing order: \Theta(nlgn)
+
+##### 6.4-4
+
+The worst-case running time of MAX-HEAPIFY is \Omega(lgn), thus the worst-cast running time of heapsort is \Omega(nlgn)
