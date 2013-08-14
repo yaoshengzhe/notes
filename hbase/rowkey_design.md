@@ -1,0 +1,2 @@
+## Composite Row Key
+Scanning multiple rows is usually more costly than reading a single row, even if that single row has many columns. So if performing a scan on the first part of your composite key often returns many rows, then you might be better off reorganizing your table to convert some of the parts of your composite key to column names. The tradeoff there is that HBase reads entire rows at a time, so while you can instruct the HBase client to only return certain columns, this will not speed up your queries. In order to do that, you need to use column families. 
