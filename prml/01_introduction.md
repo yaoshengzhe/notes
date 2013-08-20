@@ -50,3 +50,19 @@ thus
 where $$A_{ij} = \Aij$$ and $$T_i = \Ti$$
 
 ### 1.3
+\begin{align*}
+p(apple) &= p(apple|r)p(r) + p(apple|b)p(b) + p(apple|g)p(g) \\
+                      &= 0.3 \cdot 0.2 + 0.5 \cdot 0.2 + 0.3 \cdot 0.6 \\
+                      &= 0.06 + 0.1 + 0.18 \\
+                      &= 0.34
+\end{align*}
+
+\begin{align*}
+p(g|orange) &= \frac{p(g, orange)}{p(orange)} \\
+            &= \frac{p(orange|g)p(g)}{p(orange|r)p(r) + p(orange|b)p(b) + p(orange|g)p(g)} \\
+            &= \frac{0.3 \cdot 0.6}{0.4 \cdot 0.2 + 0.5 \cdot 0.2 + 0.3 \cdot 0.6} \\
+            &= \frac{0.18}{0.08 + 0.1 + 0.18} \\
+            &= \frac{0.18}{0.36} \\
+            &= 0.5
+\end{align*}
+
