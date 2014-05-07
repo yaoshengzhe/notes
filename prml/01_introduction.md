@@ -66,3 +66,19 @@ p(g|orange) &= \frac{p(g, orange)}{p(orange)} \\
             &= 0.5
 \end{align*}
 
+### 1.5
+\begin{align*}
+var[f] &= E[(f(x) - E[f(x)])^2] \\
+       &= E[f(x)^2 - 2f(x)E[f(x)] + E^2[f(x)]] \\
+       &= E[f(x)^2] - E^2(f(x))
+\end{align*}
+
+### 1.6
+If $x$ and $y$ are independent, then $p(x, y) = p(x) \cdot p(y)$ and thus $E(x,y)=E(x)E(y)$.
+
+Therefore,
+\begin{align*}
+cov(x, y) &= E_{x,y}[(x-E[x])(y-E[y])] \\
+          &= E_{x,y}[xy] - E[x]E[y] \\
+          &= 0
+\end{align*}

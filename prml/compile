@@ -1,0 +1,3 @@
+#! /bin/bash
+
+pandoc `find . -name *$1*` -o test.pdf
