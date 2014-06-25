@@ -299,3 +299,41 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
 			1.2.4.3
 			tryRegionServerReport
 			向master汇报rs的负载HServerLoad
+
+## Compaction
+
+1.1 compaction 配置参数
+
+	* maxCompactSize (hbase.hstore.compaction.max.size, default: Long.MAX_VALUE) - upper bound on file size to be included in minor compactions
+	* minCompactSize (hbase.hstore.compaction.min.size, default: MemstoreFlushSize) - lower bound below which compaction is selected without ratio test
+	* minFilesToCompact (hbase.hstore.compaction.min, default: 3) - lower bound on number of files in any minor compaction
+	* maxFilesToCompact (hbase.hstore.compaction.max, default: 10) - upper bound on number of files in any minor compaction
+	* compactionRatio (hbase.hstore.compaction.ratio, default: 1.2) - Ratio used for compaction
+	* offPeekCompactionRatio (hbase.hstore.compaction.ratio.offpeak, default: 5.0) - 
+	* throttlePoint (hbase.regionserver.thread.compaction.throttle, default: 2 * maxFilesToCompact * MemstoreFlushSize) - 
+	* majorCompactionPeriod (hbase.hregion.majorcompaction, default: 7 days) -
+	* majorCompactionJitter (hbase.hregion.majorcompaction.jitter, default: 0.5) -
+
+1.2 Compaction接口: CompactionContext - 提供了必要的信息用于Compaction
+
+1.3 CompactionPolicy: Compaction决策类，通过继承该类来实现个性化Compaction
+
+2.1 CompactSplitThread: 负责对Region进行Compaction。如果Compact之后Region过大怎么办？Split! 所以该类也会对Split进行处理。每个RegionServer上会有一个该线程。
+
+3.1 HStore.compact: 真正工作的地方。
+
+# HBase Server
+
+## RPC
+
+1.1 RpcScheduler
+
+## RPC - Source Code
+1. BufferChain: 一堆ByteBuffer的集合，提供简单接口来实现写指定chunkSize的数据到channel中。
+  其中write方法写的很烂，简单来说就是找到remaining不为空的buffer，然后再找出从这个buffer.position()开始
+  的连续chunkSize长度的数据(如果该buffer数据不够，就从下一个buffer找)。然后调用GatheringByteChannel.write，
+  写完后注意恢复最后一个buffer的limit即可(具体实现看code)，总之写的烂。
+
+# HBase Client
+
+1.1 ClientScanner <- AbstractClientScanner <- ResultScanner
