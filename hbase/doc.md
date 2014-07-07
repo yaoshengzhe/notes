@@ -322,7 +322,7 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
 
 3.1 HStore.compact: 真正工作的地方。
 
-# HBase Server
+# HBase Server (hbase-server)
 
 ## RPC
 
@@ -344,7 +344,13 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
 
 * RequestContext: 用来表示(authenticated username, remote address, protocol)，其中应该用RequestContext.get()来获取一个RequestContext的实例(因为这里用了threadlocal...)。每个CallRunner都会有一个自己的线程，在里面初始化RequestContext，所以如果RequestContext在当前CallRunner之外被访问，所有的数据都会为null。RequestContext里面里方法基本都是get, set
 
+* MultipleQueueRpcExecutor: RpcExecutor的一个实现，如名字所说，该类会管理多个blockingQueue，当调用dispatch时，会随机(真的随机，使用了java Random)选一个queue并调用put方法插入该rpc。注意blockingQueue里put方法的语义，put会导致当前线程wait如果该queue没有足够空间。
+
+* RpcExecutor: 如名字所说，这是执行Rpc的抽象类。RpcExecutor负责控制一系列线程和一系列callQueue，使用mod的方法来给每个callQueue一定的线程，每个线程所要做的任务就是不断poll所负责的callQueue，并执行所得到的CallRunner(承载rpc的所有信息)。
+
 * RpcScheduler: Rpc调度算法接口
+
+
 # HBase Client
 
 1.1 ClientScanner <- AbstractClientScanner <- ResultScanner
