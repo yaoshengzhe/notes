@@ -329,11 +329,27 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
 1.1 RpcScheduler
 
 ## RPC - Source Code
-1. BufferChain: 一堆ByteBuffer的集合，提供简单接口来实现写指定chunkSize的数据到channel中。
+* BufferChain: 一堆ByteBuffer的集合，提供简单接口来实现写指定chunkSize的数据到channel中。
   其中write方法写的很烂，简单来说就是找到remaining不为空的buffer，然后再找出从这个buffer.position()开始
   的连续chunkSize长度的数据(如果该buffer数据不够，就从下一个buffer找)。然后调用GatheringByteChannel.write，
   写完后注意恢复最后一个buffer的limit即可(具体实现看code)，总之写的烂。
 
+* CallRunner: 负责执行一个block rpc call, 每当要处理一个RPC时，会创建一个新的CallRunner，包括当前的RpcServer, 所要执行的Call和User(用于实现rpc层面的控制访问)。最重要的是run方法，流程：检测当前客户连接是否存在 -> 更新Rpc处理状态 -> 检测RpcServer是否已经启动 -> 更新当前的RequestContext -> 调用RpcServer.call执行rpc -> 清空RpcServer.CurCall -> 减小RpcServer.callSize -> 如果没有delay则response -> 处理异常(OOM和ClosedChannelException主要)
+
+* Delayable: 接口，表示一个Rpc是否被delay。在正常的rpc模型中, server: 接到rpc，扔到一个queue里 -> 每个执行线程从queue里取一个rpc，执行 -> 返回结果。注意，在上述模型中，如果一个rpc执行时间过长，那么当前的执行线程就会被block，无法执行其他rpc。这里一个优化思路就是，在执行rpc时，如果得知rpc会被delay，那么执行线程就直接返回，处理其他在queue中的rpc。至于那个被delay的rpc，它必须通过endDelay来通知执行线程去继续执行。剩下的唯一问题就是，怎么定义一个rpc是否delay。在这里，如果一个rpc的执行交由除了当前执行线程以外的线程处理时(比如HRegion中的线程)，那么没有理由让执行线程继续等待，所以可以认为该rpc被除当前执行线程意外的线程接管时，是一个delayed rpc。一句话，就是在执行线程里面做io等block操作时，做一次线程调度。。。
+
+* FifoRpcScheduler: 先进先出调度器，很简单，就是一个ThreadPool...
+
+* HBaseRPCErrorHandler: 很无聊的接口，目前只处理OOM...
+
+* RequestContext: 用来表示(authenticated username, remote address, protocol)，其中应该用RequestContext.get()来获取一个RequestContext的实例(因为这里用了threadlocal...)。每个CallRunner都会有一个自己的线程，在里面初始化RequestContext，所以如果RequestContext在当前CallRunner之外被访问，所有的数据都会为null。RequestContext里面里方法基本都是get, set
+
+* RpcScheduler: Rpc调度算法接口
 # HBase Client
 
 1.1 ClientScanner <- AbstractClientScanner <- ResultScanner
+
+# Block Cache
+
+1.1 LruBlockCache (hbase-server, org.apache.hadoop.hbase.io.hfile)
+
