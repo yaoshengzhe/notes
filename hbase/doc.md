@@ -342,15 +342,29 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
 
 * HBaseRPCErrorHandler: 很无聊的接口，目前只处理OOM...
 
+* MultipleQueueRpcExecutor: RpcExecutor的一个实现，如名字所说，该类会管理多个blockingQueue，当调用dispatch时，会随机(真的随机，使用了java Random)选一个queue并调用put方法插入该rpc。注意blockingQueue里put方法的语义，put会导致当前线程wait如果该queue没有足够空间。
+
+* PriorityFunction: 得到rpc的优先级。
+
 * RequestContext: 用来表示(authenticated username, remote address, protocol)，其中应该用RequestContext.get()来获取一个RequestContext的实例(因为这里用了threadlocal...)。每个CallRunner都会有一个自己的线程，在里面初始化RequestContext，所以如果RequestContext在当前CallRunner之外被访问，所有的数据都会为null。RequestContext里面里方法基本都是get, set
 
-* MultipleQueueRpcExecutor: RpcExecutor的一个实现，如名字所说，该类会管理多个blockingQueue，当调用dispatch时，会随机(真的随机，使用了java Random)选一个queue并调用put方法插入该rpc。注意blockingQueue里put方法的语义，put会导致当前线程wait如果该queue没有足够空间。
+* RpcCallContext: 表示一个RpcCall的接口，保存了执行该rpc所必要的信息。 RpcServer.Call 实现该接口。
 
 * RpcExecutor: 如名字所说，这是执行Rpc的抽象类。RpcExecutor负责控制一系列线程和一系列callQueue，使用mod的方法来给每个callQueue一定的线程，每个线程所要做的任务就是不断poll所负责的callQueue，并执行所得到的CallRunner(承载rpc的所有信息)。
 
 * RpcScheduler: Rpc调度算法接口
 
+* RpcSchedulerContext: RpcScheduler.Context的一个实现，保存了当前RpcServer的一个引用。
 
+* RpcServer: Rpc核心逻辑，实现了RpcServerInterface
+
+* RpcServerInterface: Rpc实现的基本接口，核心方法是call(BlockingService service, MethodDescriptor md, Message param, CellScanner cellScanner, long receiveTime, MonitoredRPCHandler status). 其中
+  - service: protobuf生成的接口，每个定义的proto service都会自动生成一个实现BlockingService的类。
+  - md: 所要调用的方法名，大多数情况通过service.getDescriptorForType().findMethodByName(header.getMethodName())得到，其中header是rpc的头部，由RpcServer处理
+  - param: 真实的request, GetRequest, MutateRequest, etc.
+  - cellScanner: 比较诡异的东西，下面是解释(很长)。思考一个问题，如果rpc(request/response)中有大量cell，如何能够有效进行传输。在0.96之前，因为KeyValue实现了Writable, 我们就直接把它们写到network buffer中。但是在0.96时，hbase引入了protobuf，rpc系统基本上是基于protobuf进行了重写。并且引入了Cell接口, KeyValue变成了Cell接口的一个实现。很自然，KeyValue不需要实现Writable接口了。为了解决一开始的问题，很自然可以想到，我们可以把所要传输的Cell扔到一个protobuf中，可是可是，protobuf会将传进来的cells进行一份拷贝(这个无法避免，除非改目前protobuf的实现，使它支持stream)。所以我们将已经存在在内存的cells又进行了一次拷贝，这样做会带来更大的内存开销，降低效率。所以，我们还是返回老的方法，不通过protobuf，自己设计格式，将这些cells丢到rpc里。最终的思路也很简单，rpc的格式变为: rpc长度 + rpc header + protobuf message + 自己的cellBlock。在rpc header中会告诉我们有多少cellBlock，然后protobuf message 会有所有rpc的基本信息。注意这里cellBlock可以有多种实现，通常client建立连接时，告诉server要用哪个。目前asynchbase只使用最基本的KeyValueCodec。(完了，好长。。。)
+  - receiveTime: 当前rpc开始处理的时间(从加到queue里开始)
+  - status: 当前rpc的status
 # HBase Client
 
 1.1 ClientScanner <- AbstractClientScanner <- ResultScanner
