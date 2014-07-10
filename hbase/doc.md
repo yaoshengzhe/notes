@@ -365,6 +365,11 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
   - cellScanner: 比较诡异的东西，下面是解释(很长)。思考一个问题，如果rpc(request/response)中有大量cell，如何能够有效进行传输。在0.96之前，因为KeyValue实现了Writable, 我们就直接把它们写到network buffer中。但是在0.96时，hbase引入了protobuf，rpc系统基本上是基于protobuf进行了重写。并且引入了Cell接口, KeyValue变成了Cell接口的一个实现。很自然，KeyValue不需要实现Writable接口了。为了解决一开始的问题，很自然可以想到，我们可以把所要传输的Cell扔到一个protobuf中，可是可是，protobuf会将传进来的cells进行一份拷贝(这个无法避免，除非改目前protobuf的实现，使它支持stream)。所以我们将已经存在在内存的cells又进行了一次拷贝，这样做会带来更大的内存开销，降低效率。所以，我们还是返回老的方法，不通过protobuf，自己设计格式，将这些cells丢到rpc里。最终的思路也很简单，rpc的格式变为: rpc长度 + rpc header + protobuf message + 自己的cellBlock。在rpc header中会告诉我们有多少cellBlock，然后protobuf message 会有所有rpc的基本信息。注意这里cellBlock可以有多种实现，通常client建立连接时，告诉server要用哪个。目前asynchbase只使用最基本的KeyValueCodec。(完了，好长。。。)
   - receiveTime: 当前rpc开始处理的时间(从加到queue里开始)
   - status: 当前rpc的status
+
+RWQueueRpcExecutor: RpcExecutor的一个实现，如名字所示，将读写请求放到不同的queue里面。queues保存一系列BlockingQueue的对象，其中前n个是写队列，后m个是读队列，m和n都可以自定义。
+
+SingleQueueRpcExecutor： RpcExecutor的又一个实现，如名字所示，所有的请求都保存在一个queue里
+
 # HBase Client
 
 1.1 ClientScanner <- AbstractClientScanner <- ResultScanner
