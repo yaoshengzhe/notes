@@ -368,6 +368,27 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
 
 RWQueueRpcExecutor: RpcExecutor的一个实现，如名字所示，将读写请求放到不同的queue里面。queues保存一系列BlockingQueue的对象，其中前n个是写队列，后m个是读队列，m和n都可以自定义。
 
+SimpleRpcScheduler: 负责维护多个RpcExecutor。priority和replication这两个executor目前采用SingleQueueRpcExecutor。replication顾名思义就是用来处理replication rpc；priority目前是针对meta操作的rpc都视为priority rpc，所以有此单独的priority executor来处理。调度策略(dispatch方法)是: 得到rpc的优先级 -> 如果优先级大于预先给定的highPriorityLevel，进入priority executor; 否则如果优先级等于5(HConstants.REPLICATION_QOS)，则进入replication executor; 余下的进入call executor。
+  call executor(普通rpc executor)初始化策略:
+    * 如果numCallQueues > 1 并且callqReadShare > 0
+      - 如果callQueueType == "deadline" -> 使用BoundedPriorityBlockingQueue的RWQueueRpcExecutor
+      - 否则，普通的RWQueueRpcExecutor
+    * 如果仅仅是numCallQueues > 1但是callqReadShare == 0
+      - 如果callQueueType == "deadline" -> 使用BoundedPriorityBlockingQueue的MultipleQueueRpcExecutor
+      - 否则，普通的MultipleQueueRpcExecutor
+    * 如果numCallQueues == 0 并且 callqReadShare == 0
+      - 如果callQueueType == "deadline" -> 使用BoundedPriorityBlockingQueue的SingleQueueRpcExecutor
+      - 否则，普通的SingleQueueRpcExecutor
+
+  一些重要的设置:
+   1. "ipc.server.callqueue.read.share", [0, 1]，默认为0。这个用来控制有百分之多少的callQueue用来执行read rpc。当然了，就算这个数值为0，目前底层的executor(RWQueueRpcExecutor)也会至少分配一个read callQueue。
+   2. "ipc.server.callqueue.handler.factor": 控制callQueue的数量，这个值乘以handlerCount就是最终callQueue的数量。
+   3. "ipc.server.callqueue.type": callQueue类型，目前只有"deadline"和"fifo"两个。"deadline": 使用BoundedPriorityBlockingQueue来根据rpc的优先级调度, "fifo": 先到先执行。
+   4. "ipc.server.queue.max.call.delay": rpc最多能够delay的时间，对于呆在queue里的时间超过这个delay的所有rpc，它们的处理顺序将是fifo(谁先进queue先处理谁)。默认值是5000ms。
+   5. "hbase.regionserver.handler.count": handlerCount，决定默认rpc callQueue的长度，默认值是30
+   6. "hbase.regionserver.replication.handler.count": replication callQueue的长度，默认值是3
+   7. "hbase.regionserver.metahandler.count": priority callQueue的长度，默认值是10
+
 SingleQueueRpcExecutor： RpcExecutor的又一个实现，如名字所示，所有的请求都保存在一个queue里
 
 # HBase Client
