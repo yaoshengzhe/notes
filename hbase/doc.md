@@ -328,7 +328,9 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
 
 1.1 RpcScheduler
 
-## RPC - Source Code
+## RPC - Source Code (Last Update: 07/14/2014)
+* BalancedQueueRpcExecutor: RpcExecutor的一个实现，如名字所说，该类会管理多个blockingQueue并且使用QueueBalancer来决定rpc应该被放入那个queue。当调用dispatch时，会随机(真的随机，使用了java Random)选一个queue并调用put方法插入该rpc。注意blockingQueue里put方法的语义，put会导致当前线程wait如果该queue没有足够空间。
+
 * BufferChain: 一堆ByteBuffer的集合，提供简单接口来实现写指定chunkSize的数据到channel中。
   其中write方法写的很烂，简单来说就是找到remaining不为空的buffer，然后再找出从这个buffer.position()开始
   的连续chunkSize长度的数据(如果该buffer数据不够，就从下一个buffer找)。然后调用GatheringByteChannel.write，
@@ -341,8 +343,6 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
 * FifoRpcScheduler: 先进先出调度器，很简单，就是一个ThreadPool...
 
 * HBaseRPCErrorHandler: 很无聊的接口，目前只处理OOM...
-
-* MultipleQueueRpcExecutor: RpcExecutor的一个实现，如名字所说，该类会管理多个blockingQueue，当调用dispatch时，会随机(真的随机，使用了java Random)选一个queue并调用put方法插入该rpc。注意blockingQueue里put方法的语义，put会导致当前线程wait如果该queue没有足够空间。
 
 * PriorityFunction: 得到rpc的优先级。
 
@@ -375,10 +375,10 @@ SimpleRpcScheduler: 负责维护多个RpcExecutor。priority和replication这两
       - 否则，普通的RWQueueRpcExecutor
     * 如果仅仅是numCallQueues > 1但是callqReadShare == 0
       - 如果callQueueType == "deadline" -> 使用BoundedPriorityBlockingQueue的MultipleQueueRpcExecutor
-      - 否则，普通的MultipleQueueRpcExecutor
+      - 否则，BalancedQueueRpcExecutor((但是有多个queue))
     * 如果numCallQueues == 0 并且 callqReadShare == 0
       - 如果callQueueType == "deadline" -> 使用BoundedPriorityBlockingQueue的SingleQueueRpcExecutor
-      - 否则，普通的SingleQueueRpcExecutor
+      - 否则，BalancedQueueRpcExecutor(但是只有一个queue)
 
   一些重要的设置:
    1. "ipc.server.callqueue.read.share", [0, 1]，默认为0。这个用来控制有百分之多少的callQueue用来执行read rpc。当然了，就算这个数值为0，目前底层的executor(RWQueueRpcExecutor)也会至少分配一个read callQueue。
@@ -388,8 +388,6 @@ SimpleRpcScheduler: 负责维护多个RpcExecutor。priority和replication这两
    5. "hbase.regionserver.handler.count": handlerCount，决定默认rpc callQueue的长度，默认值是30
    6. "hbase.regionserver.replication.handler.count": replication callQueue的长度，默认值是3
    7. "hbase.regionserver.metahandler.count": priority callQueue的长度，默认值是10
-
-SingleQueueRpcExecutor： RpcExecutor的又一个实现，如名字所示，所有的请求都保存在一个queue里
 
 # HBase Client
 
