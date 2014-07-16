@@ -348,6 +348,9 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
 
 * ZkCoordinatedStateManager: CorrdinatedStateManager基于zookeeper的实现，里面有splitTransactionCoordination，closeRegionCoordination，openRegionCoordination和regionMergeCoordination。
 
+* ZkOpenRegionCoordination: 负责处理打开region请求。
+  - transitionToOpened： 调用ZKAssign.transitionNodeOpened将相应node的数据从EventType.RS_ZK_REGION_OPENING 改为 EventType.RS_ZK_REGION_OPENED
+  - transitionFromOfflineToOpening： 调用ZKAssign.transitionNodeOpened将相应node的数据从EventType.M_ZK_REGION_OFFLINE 改为 EventType.RS_ZK_REGION_OPENING
 ## Rpc
 
 1.1 RpcScheduler
@@ -356,9 +359,7 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
 * BalancedQueueRpcExecutor: RpcExecutor的一个实现，如名字所说，该类会管理多个blockingQueue并且使用QueueBalancer来决定rpc应该被放入那个queue。当调用dispatch时，会随机(真的随机，使用了java Random)选一个queue并调用put方法插入该rpc。注意blockingQueue里put方法的语义，put会导致当前线程wait如果该queue没有足够空间。
 
 * BufferChain: 一堆ByteBuffer的集合，提供简单接口来实现写指定chunkSize的数据到channel中。
-  其中write方法写的很烂，简单来说就是找到remaining不为空的buffer，然后再找出从这个buffer.position()开始
-  的连续chunkSize长度的数据(如果该buffer数据不够，就从下一个buffer找)。然后调用GatheringByteChannel.write，
-  写完后注意恢复最后一个buffer的limit即可(具体实现看code)，总之写的烂。
+  其中write方法写的很烂，简单来说就是找到remaining不为空的buffer，然后再找出从这个buffer.position()开始的连续chunkSize长度的数据(如果该buffer数据不够，就从下一个buffer找)。然后调用GatheringByteChannel.write，写完后注意恢复最后一个buffer的limit即可(具体实现看code)，总之写的烂。
 
 * CallRunner: 负责执行一个block rpc call, 每当要处理一个RPC时，会创建一个新的CallRunner，包括当前的RpcServer, 所要执行的Call和User(用于实现rpc层面的控制访问)。最重要的是run方法，流程：检测当前客户连接是否存在 -> 更新Rpc处理状态 -> 检测RpcServer是否已经启动 -> 更新当前的RequestContext -> 调用RpcServer.call执行rpc -> 清空RpcServer.CurCall -> 减小RpcServer.callSize -> 如果没有delay则response -> 处理异常(OOM和ClosedChannelException主要)
 
