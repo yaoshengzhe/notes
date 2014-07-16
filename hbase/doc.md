@@ -324,11 +324,35 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
 
 # HBase Server (hbase-server)
 
-## RPC
+# Coordination (Last Update: 07/15/2014)
+
+* CoordinatedStateManager(居然在hbase-client，不能理解。。。): 最基本的Coordination接口，通过指定: "hbase.coordinated.state.manager.class"来告诉HBase使用哪个实现。目前永远使用ZkCoordinatedStateManager。
+
+* BaseCoordinatedStateManager: 实现CoordinatedStateManager的抽象类(基本都是空方法)，思路是，所有具体的CoordinatedStateManager实现最好直接通过继承该BaseCoordinatedStateManager，而不要直接实现CoordinatedStateManager。这样，我们可以在BaseCoordinatedStateManager添加更多的方法而不用强迫每个子类都去实现。当然，这个也有争议，目前很多人认为应该直接实现接口而不是通过继承。。。
+
+* CloseRegionCoordination： 关闭Region的Coordination接口。
+
+* OpenRegionCoordination： 打开Region的Coordination接口。
+
+* RegionMergeCoordination：合并Region的Coordination接口。
+
+* SplitTransactionCoordination：分裂Region的Coordination接口。
+
+* ZkCloseRegionCoordination: CloseRegionCoordination的基于zookeeper的实现。
+  如何检查region已关闭(checkClosingState)：
+    1. zookeeper中/hbase/region-in-transition/$(region_name)存在。
+    2. 以上node的zookeeper版本符合预期或者等于-1。
+    3. 通过node中存取的数据生成RegionTransition并且该rt的event type等于EventType.M_ZK_REGION_CLOSING
+  关闭region:
+    调用ZKAssign.transitionNode将zookeeper对应node的EventType.M_ZK_REGION_CLOSIN G转为 EventType.RS_ZK_REGION_CLOSED
+
+* ZkCoordinatedStateManager: CorrdinatedStateManager基于zookeeper的实现，里面有splitTransactionCoordination，closeRegionCoordination，openRegionCoordination和regionMergeCoordination。
+
+## Rpc
 
 1.1 RpcScheduler
 
-## RPC - Source Code (Last Update: 07/14/2014)
+## Rpc Source (Last Update: 07/14/2014)
 * BalancedQueueRpcExecutor: RpcExecutor的一个实现，如名字所说，该类会管理多个blockingQueue并且使用QueueBalancer来决定rpc应该被放入那个queue。当调用dispatch时，会随机(真的随机，使用了java Random)选一个queue并调用put方法插入该rpc。注意blockingQueue里put方法的语义，put会导致当前线程wait如果该queue没有足够空间。
 
 * BufferChain: 一堆ByteBuffer的集合，提供简单接口来实现写指定chunkSize的数据到channel中。
