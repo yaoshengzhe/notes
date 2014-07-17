@@ -351,11 +351,18 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
 * ZkOpenRegionCoordination: 负责处理打开region请求。
   - transitionToOpened： 调用ZKAssign.transitionNodeOpened将相应node的数据从EventType.RS_ZK_REGION_OPENING 改为 EventType.RS_ZK_REGION_OPENED
   - transitionFromOfflineToOpening： 调用ZKAssign.transitionNodeOpened将相应node的数据从EventType.M_ZK_REGION_OFFLINE 改为 EventType.RS_ZK_REGION_OPENING
-## Rpc
 
-1.1 RpcScheduler
+## Coprocessor (Last Update: 07/16/2014)
 
-## Rpc Source (Last Update: 07/14/2014)
+* AggregateImplementation: 继承了了预先定义的protobuf生成的AggregateService，并且实现了CoprocessorService和Coprocessor接口。这个类实现了一些常见的聚合函数，并且由hbase server调用。例如getMax:
+    - 创建一个ColumnInterpreter(用来将cell转为可以操作的number, hbase client端有多个实现)
+    - 创建Scan对象(通过请求中的scan)
+    - 不断通过scan得到数据，然后求最大
+    - 构造AggregateResponse并设置结果
+
+* BaseMasterObserver: 实现了MasterObserver接口，但是所有方法都是空(为所有子类提供一个基础基类)。
+* MasterObserver: 继承了Coprocessor接口，并加上了各种master操作的hook
+## Rpc (Last Update: 07/14/2014)
 * BalancedQueueRpcExecutor: RpcExecutor的一个实现，如名字所说，该类会管理多个blockingQueue并且使用QueueBalancer来决定rpc应该被放入那个queue。当调用dispatch时，会随机(真的随机，使用了java Random)选一个queue并调用put方法插入该rpc。注意blockingQueue里put方法的语义，put会导致当前线程wait如果该queue没有足够空间。
 
 * BufferChain: 一堆ByteBuffer的集合，提供简单接口来实现写指定chunkSize的数据到channel中。
