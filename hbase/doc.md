@@ -352,7 +352,7 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
   - transitionToOpened： 调用ZKAssign.transitionNodeOpened将相应node的数据从EventType.RS_ZK_REGION_OPENING 改为 EventType.RS_ZK_REGION_OPENED
   - transitionFromOfflineToOpening： 调用ZKAssign.transitionNodeOpened将相应node的数据从EventType.M_ZK_REGION_OFFLINE 改为 EventType.RS_ZK_REGION_OPENING
 
-## Coprocessor (Last Update: 07/16/2014)
+## Coprocessor (Last Update: 07/24/2014)
 
 * AggregateImplementation: 继承了了预先定义的protobuf生成的AggregateService，并且实现了CoprocessorService和Coprocessor接口。这个类实现了一些常见的聚合函数，并且由hbase server调用。例如getMax:
     - 创建一个ColumnInterpreter(用来将cell转为可以操作的number, hbase client端有多个实现)
@@ -361,7 +361,47 @@ HRegionServer的Jetty(InfoServer)端口默认是60030，master的Jetty(InfoServe
     - 构造AggregateResponse并设置结果
 
 * BaseMasterObserver: 实现了MasterObserver接口，但是所有方法都是空(为所有子类提供一个基础基类)。
+
+* BaseRegionObserver: 实现了RegionObserver接口，但是所有方法都是空(为所有子类提供一个基础基类)
+
+* BaseRegionServerObserver: 实现了RegionServerObserver接口，但是所有方法都是空(为所有子类提供一个基础基类)
+
+* BaseRowProcessorEndpoint: 继承了了预先定义的protobuf生成的RowProcessorService，并且实现了CoprocessorService和Coprocessor接口。这个类实现了一些常见的聚合函数，并且由hbase server调用。例如getMax:
+    - 创建一个ColumnInterpreter(用来将cell转为可以操作的number, hbase client端有多个实现)
+    - 创建Scan对象(通过请求中的scan)
+    - 不断通过scan得到数据，然后求最大
+    - 构造AggregateResponse并设置结果
+
+* BaseWALObserver: 实现了WALObserver接口，但是所有方法都是空(为所有子类提供一个基础基类)
+
+* CoprocessorHost: 定义了coprocessor主要的配置键并且提供了很多帮助方法去加载coprocessor。目前的子类实现(RegionCoprocessorHost)中，CoprocessorHost包含了所有的coprocessor实例和调用coprocessor的环境(CoprocessorEnvironment)。
+
+* CoprocessorHost.Environment: 实现了CoprocessorEnvironment，提供了基本实现。
+
+* CoprocessorService：用coprocessor实现自定义rpc必须实现的接口(还有一个是Coprocessor)。目前采用protobuf service
+
+* EndpointObserver：对于自定义的rpc, EndpointObserver可以实现在调用rpc之前和之后插入自定义代码。注意，这个是接口，目前主要用来实现AccessControl
+
+* MasterCoprocessorEnvironment：接口，继承了CoprocesorEnvironment并添加了master专有的方法。
+
 * MasterObserver: 继承了Coprocessor接口，并加上了各种master操作的hook
+
+* MultiRowMutationEndpoint：利用协处理器实现了在单个region上的多行事务处理。在mutateRows方法里，如果所有mutation不在同一个Region里就丢出异常。否则，调用HRegion.mutateRowsWithLocks方法。
+
+* ObserverContext: 保存了当前Observer Coprocessor执行的状态，注意ObserverContext保存了一份当前CoprocessorEnvironment的引用。
+
+* RegionCoprocessorEnvironment：接口，继承了CoprocesorEnvironment并添加了region专有的方法。
+
+* RegionObserver: 继承了Coprocessor接口，并加上了各种region操作的hook
+
+* RegionServerCoprocessorEnvironment：接口，继承了CoprocesorEnvironment并添加了regionserver专有的方法。
+
+* RegionServerObserver: 继承了Coprocessor接口，并加上了各种region server操作的hook
+
+* WALCoprocessorEnvironment：接口，继承了CoprocesorEnvironment并添加了wal专有的方法。
+
+* WALObserver: 继承了Coprocessor接口，并加上了各种WAL操作的hook
+
 ## Rpc (Last Update: 07/14/2014)
 * BalancedQueueRpcExecutor: RpcExecutor的一个实现，如名字所说，该类会管理多个blockingQueue并且使用QueueBalancer来决定rpc应该被放入那个queue。当调用dispatch时，会随机(真的随机，使用了java Random)选一个queue并调用put方法插入该rpc。注意blockingQueue里put方法的语义，put会导致当前线程wait如果该queue没有足够空间。
 
