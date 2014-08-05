@@ -104,4 +104,87 @@
             X'.next = X.next.next;
          }
 
+## 
+
+算法：
+难点：
+
+## 
+
+算法：
+难点：
+
+## 
+
+算法：
+难点：
+
+## 
+
+算法：
+难点：
+
+## 
+
+算法：
+难点：
+
+## 
+
+算法：
+难点：
+
+## 
+
+算法：
+难点：
+
+## 
+
+算法：
+难点：
+
+## 
+
+算法：
+难点：
+
+## 
+
+算法：
+难点：
+
+## 
+
+算法：
+难点：
+
+## 
+
+算法：
+难点：
+
+## 
+
+算法：
+难点：
+
+## Longest Palindromic Substring
+
+算法：1
+
+## Median of Two Sorted Arrays
+
+算法：用find Kth elements in two sorted arrays做。如果两个数组长度为奇数，就返回findK(A, B, (A.len + B.len) / 2)，否则就调用两次。注意，这里k的范围是[0, A.len + B.len - 1] (当然可以从1开始，算法小改动)
+难点：1. 基本情况：当一个数组为空时，返回另外一个数组B[startB + k - 1]
+      2. 考虑两个数组[startA, endA)和[startB, endB)中寻找第k大的元素
+      3. 首先计算midA = startA + (endA - startA) / 2 和midB = startB + (endB - startB) / 2
+      4. 如果k小于midA + midB - startA - startB + 1，比较A[midA]和B[midB]，丢掉大的那个数组的后半部分(包括对应的mid)
+      5. k大于等于的情况类似，只是要丢掉A[midA]和B[midB]小的那个数组的前半部分(包括对应的mid)
+
+## Two Sum
+
+算法：使用一个HashMap，扫一遍数组。HashMap的key是数字，value是该数字在数组中所有index最大值。然后扫第二遍，每次都查HashMap看看target - numbers[i]在不在HashMap中，如果在并且HashMap返回的index不等于当前i，则能找出这样的组合。
+难点：1. 某个特定数字可能只出现一次，比如要找target = 4，数组是[1, 2]，那么我们就算在HashMap找到了这个值也不能直接判断。这里我们要确认有两个2。方法就是如算法所说，用HashMap并且判断返回的index不能等于当前数字的index。
+
 
