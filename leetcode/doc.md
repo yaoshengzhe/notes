@@ -144,34 +144,37 @@
 算法：
 难点：
 
-## 
+## Generate Parentheses
 
-算法：
-难点：
+算法：Dfs思想，如果左括号数量没达到n, 递归调用genParen(numLeft+1, numRight)；之后如果左括号数量大于右括号数量，调用genParen(numLeft, numRight+1)
+难点：1. 基本条件，当左右括号总数为2n时，添加到最后结果中。
+      2. 使用辅助函数，用一个char[2n]的缓冲来表示当前括号组合可能
+      3. 先对numLeft < n递归，然后对numLeft > numRight递归。第一种情况设buf[numLeft+numRight]为'('，后一种为')'
 
-## 
+## Valid Parentheses
 
-算法：
-难点：
+算法：用一个栈，如果当前ch是左括号则入栈；如果不是，当栈为空或者栈顶括号不匹配时返回false，否则则匹配并弹出栈顶元素。出了循环后，返回栈是否为空。
+难点：注意可以用一个辅助函数判断括号是否匹配。
 
-## 
+## String to Integer (atoi)
 
-算法：
-难点：
+算法：规范化一下输入的string, 注意判断是否第一位是符号位，然后简单的10 * result + s.charAt(i) - '0'
+难点：1. 用long来简化溢出判断。
+      2. 注意脑残leetcode的测试，用一个normalize(String str)先规范化一下输入的str比较好
 
-## 
+## Reverse Integer
 
-算法：
-难点：
-
-## 
-
-算法：
-难点：
+算法：通过x%10得到个位，然后result = 10*result + x%10, 之后x /= 10，直到x == 0退出
+难点：记得处理x为负数情况。
 
 ## Longest Palindromic Substring
 
 算法：1
+
+## Add Two Numbers
+
+算法：有递归解法和迭代解法。递归要注意基本条件里处理进位的情况。这题其实迭代比较简单。迭代法：创建一个dummy node，循环终止条件是(l1 != null || l2 != null || carry != 0)，循环体里面计算l1.val + l2.val + carry(如果l1或者l2为null就不加)，然后carry = val / 10，新的node为val % 10
+难点：递归记得处理基本条件(不要忘记carry)。迭代要想清楚循环退出条件。
 
 ## Median of Two Sorted Arrays
 
