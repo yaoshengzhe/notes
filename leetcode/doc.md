@@ -149,10 +149,16 @@
 算法：
 难点：
 
-## 
+## Combination Sum II
 
-算法：
-难点：
+* 算法：将输入排序。然后使用一个辅助函数，该函数意义是将所有num[start:]中符合target的结果保存到result中。基本情况: 如果target==0，将结果保存；如果target < 0, 直接返回；如果start == num数组长度，直接返回。之后的递归，分两种情况:
+
+    - 结果中包含num[start]：将num[start]添加到buf中，然后递归(start + 1, target - num[start]) 
+    - 结果中不含num[start]: 直接递归(start + 1, target)
+
+* 难点：
+
+    - 为了去重，解法中的两个递归要按顺序，先递归包含num[start]，然后再递归不含num[start]。中间跳过所有和num[start]相同的元素。道理也很简单，递归函数的意义是结果中包含一个至多个num[start]；既然如此，第二个递归不应该考虑和num[start]相同的元素。这也是为什么一开始要对num数组排序的意义。
 
 ## Generate Parentheses
 
