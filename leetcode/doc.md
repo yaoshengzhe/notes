@@ -139,10 +139,19 @@
     - 循环时，如果当前的interval不和current重合的条件是interval.start > current.end，因为已按start排序
     - 如果有重合，只需将current.end设为当前interval.end，同样，原因是已按start排序
 
-## 
+## Spiral Matrix
 
-* 算法：
+* 算法：按上、右、下、左顺序打印。注意在打印最后的左边那一列时，不要包含首尾。
 * 难点：
+
+    - 确定辅助函数的参数，最好传进左上角坐标，打印的行长度和列长度
+    - 注意特殊情况，如果只有一行或者只有一列
+    - 当行长度或者列长度小于0时，什么也不做
+    - 注意坐标计算。
+        - 上: m(x)(y+i) 0 <= i < colLen
+        - 右: m(x+i)(y+colLen-1) 1 <= i < rowLen
+        - 下: m(x+rowLen-1)(y+colLen-1-i) 1 <= i < colLen
+        - 左: m(x+rowLen-1-i)(y) 1 <= i < rowLen - 1
 
 ## Rotate Image
 
