@@ -129,10 +129,15 @@
 * 算法：
 * 难点：
 
-## 
 
-* 算法：
+## Merge Intervals
+
+* 算法：先按Interval.start排序。然后用一个current表示待插interval，扫一遍数组，如果当前的interval.start大于current.end就将current插入到结果中并设current = interval；否则如果interval.end >= current.end，则设current.end = interval.end。结束循环后注意判断current是否为null，如果不为null就将current加入。
 * 难点：
+
+    - 先排序可以使整个算法变为O(nlgn)并简化算法
+    - 循环时，如果当前的interval不和current重合的条件是interval.start > current.end，因为已按start排序
+    - 如果有重合，只需将current.end设为当前interval.end，同样，原因是已按start排序
 
 ## 
 
