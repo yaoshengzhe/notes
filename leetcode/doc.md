@@ -124,11 +124,14 @@
 * 算法：
 * 难点：
 
-## 
+## Rotate List
 
-* 算法：
+* 算法：找到分割点，然后改指针。
 * 难点：
 
+    - 考虑到n可能大于链表长度，解决方法很简单，一开始令p=head, 将p移动n个位置。每当p为null时就重设为head。
+    - 当第一次循环后，如果p为null，则直接返回head
+    - 当找出p之后，用另一个指针q指向head, 然后p, q同事移动直到p.next为null。此时q.next就是分割点，p是尾指针。
 
 ## Merge Intervals
 
