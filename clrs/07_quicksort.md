@@ -144,15 +144,20 @@ TODO
 ##### 7-4 Stack depth for quicksort
 a. last line of while loop is equivalent to call TAIL-RECURSIVE-QUICKSORT(A, q+1, r)   
 
-b. Array is in decreasing order.
+b. Array is already sorted. Thus each time q = r.
 
-c. 
+c. Always recurse into the smaller subarray.
 
 	TAIL-RECURSIVE-QUICKSORT(A, p, r)
 		while p < r
-			q = RANDOMIZED-PARTITION(A, p, r)
-			TAIL-RECURSIVE-QUICKSORT(A, p, q-1)
-			p = q + 1
+			q = PARTITION(A, p, r)
+			if (q < (p + r)/2) {
+				TAIL-RECURSIVE-QUICKSORT(A, p, q-1)
+				p = q + 1
+			} else {
+				TAIL-RECURSIVE-QUICKSORT(A, q+1, r)
+				r = q - 1
+			}
 			
 ##### 7-5 Median-of-3 partition
 a. Pr(x less than i) * Pr(x larger than i)
